@@ -2,6 +2,8 @@ from models.models import MaterialPoint
 from models.models import MaterialBody
 from models.models import BodyTrajectory
 from models.models import PointTrajectory
+from models.models import SpacePoint
+from models.models import SpaceGrid
 from math import ceil
 from math import exp
 import matplotlib.pyplot as plt
@@ -75,3 +77,50 @@ def plot_body_trajectory(body_trajectory: BodyTrajectory):
 
     plt.plot(final_position[0], final_position[1])
     plt.show()
+
+
+def create_space_points(width, height, n):
+    space_points = []
+    id_number = 0
+    for i in range(ceil(width/n)):
+        for j in range(ceil(height/n)):
+            space_points.append(SpacePoint(id_number, width / n * i, height / n * j,
+                                           0, height / n * j, 0))
+            id_number += 1
+    return SpaceGrid(space_points)
+
+def move_through_space(time, h, space_grid: SpaceGrid):
+    fig, axes = plt.subplots(ceil(time/h), ceil(time/h)+1)
+    x = []
+    y = []
+    i1 = 0
+    i2 = 0
+    step = 1
+    extra = 0
+
+    for n in range(10):
+        x.append(space_grid.space_points[n].coord_x)
+        y.append(space_grid.space_points[n * 10].coord_y)
+
+    for t in range(ceil(time/h)):
+        u = []
+        v = []
+        stepN = str(step)
+        timer = str('{:.3f}'.format(t*h))
+
+        for m in range(100):
+            u.append(-cos(pi*t*h) * space_grid.space_points[m].coord_x)
+            v.append(sin(pi*t*h) * space_grid.space_points[m].coord_y)
+        axes[i1][i2].set_title('Step ' + stepN + ' (t=' + timer + '*pi)')
+        axes[i1][i2].streamplot(np.asarray(x), np.asarray(y), np.asarray(u).reshape(10, 10), np.asarray(v).reshape(10, 10), color='b')
+        axes[i1][i2].quiver(np.asarray(x), np.asarray(y), np.asarray(u).reshape(10, 10), np.asarray(v).reshape(10, 10), color='#2011af60')
+
+        if t >= ceil(sqrt(time/h))*(1 + i1):
+            i1 += 1
+            i2 = 0
+        else:
+            i2 += 1
+        step += 1
+
+    fig.set_figwidth(14)
+    fig.set_figheight(14)
