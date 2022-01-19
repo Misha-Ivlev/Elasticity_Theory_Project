@@ -78,7 +78,7 @@ def plot_body_trajectory(body_trajectory: BodyTrajectory):
     plt.plot(final_position[0], final_position[1])
     plt.show()
 
-
+# часть для Дарины
 def create_space_points(width, height, n):
     space_points = []
     id_number = 0
